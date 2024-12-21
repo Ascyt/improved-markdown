@@ -152,51 +152,68 @@
 
         <!-- Main Content -->
         <div id="main">
-            <!-- Main content will be loaded here -->
+            <!-- Tab 1 Content -->
+            <div class="tab-content" id="tab1-content">
+                <div id="section1">
+                    <h2>Section 1</h2>
+                    <p>Content of Section 1 in Tab 1.</p>
+                </div>
+                <div id="section2">
+                    <h2>Section 2</h2>
+                    <p>Content of Section 2 in Tab 1.</p>
+                </div>
+                <div id="section3">
+                    <h2>Section 3</h2>
+                    <p>Content of Section 3 in Tab 1.</p>
+                </div>
+            </div>
+
+            <!-- Tab 2 Content -->
+            <div class="tab-content" id="tab2-content" style="display: none;">
+                <div id="topicA">
+                    <h2>Topic A</h2>
+                    <p>Content of Topic A in Tab 2.</p>
+                </div>
+                <div id="topicB">
+                    <h2>Topic B</h2>
+                    <p>Content of Topic B in Tab 2.</p>
+                </div>
+                <div id="topicC">
+                    <h2>Topic C</h2>
+                    <p>Content of Topic C in Tab 2.</p>
+                </div>
+            </div>
+
+            <!-- Tab 3 Content -->
+            <div class="tab-content" id="tab3-content" style="display: none;">
+                <div id="itemX">
+                    <h2>Item X</h2>
+                    <p>Content of Item X in Tab 3.</p>
+                </div>
+                <div id="itemY">
+                    <h2>Item Y</h2>
+                    <p>Content of Item Y in Tab 3.</p>
+                </div>
+                <div id="itemZ">
+                    <h2>Item Z</h2>
+                    <p>Content of Item Z in Tab 3.</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Data for each tab
-        const tabsContent = {
-            tab1: {
-                sidebar: ['Section 1', 'Section 2', 'Section 3'],
-                main: [
-                    { id: 'section1', title: 'Section 1', content: 'Content of Section 1 in Tab 1.' },
-                    { id: 'section2', title: 'Section 2', content: 'Content of Section 2 in Tab 1.' },
-                    { id: 'section3', title: 'Section 3', content: 'Content of Section 3 in Tab 1.' }
-                ]
-            },
-            tab2: {
-                sidebar: ['Topic A', 'Topic B', 'Topic C'],
-                main: [
-                    { id: 'topicA', title: 'Topic A', content: 'Content of Topic A in Tab 2.' },
-                    { id: 'topicB', title: 'Topic B', content: 'Content of Topic B in Tab 2.' },
-                    { id: 'topicC', title: 'Topic C', content: 'Content of Topic C in Tab 2.' }
-                ]
-            },
-            tab3: {
-                sidebar: ['Item X', 'Item Y', 'Item Z'],
-                main: [
-                    { id: 'itemX', title: 'Item X', content: 'Content of Item X in Tab 3.' },
-                    { id: 'itemY', title: 'Item Y', content: 'Content of Item Y in Tab 3.' },
-                    { id: 'itemZ', title: 'Item Z', content: 'Content of Item Z in Tab 3.' }
-                ]
-            }
-        };
-
         // Current tab
         let currentTab = 'tab1';
 
         // Elements
         const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
         const sidebarContent = document.getElementById('sidebar-content');
-        const mainContent = document.getElementById('main');
 
         // Load content for a tab
         function loadTab(tabName) {
             currentTab = tabName;
-            const tabData = tabsContent[tabName];
 
             // Update tab buttons
             tabButtons.forEach(btn => {
@@ -207,34 +224,28 @@
                 }
             });
 
-            // Update sidebar
-            sidebarContent.innerHTML = '';
-            tabData.sidebar.forEach((section, index) => {
-                const link = document.createElement('a');
-                link.href = '#' + tabData.main[index].id;
-                link.textContent = section;
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.getElementById(tabData.main[index].id).scrollIntoView({ behavior: 'smooth' });
-                });
-                sidebarContent.appendChild(link);
+            // Update tab contents
+            tabContents.forEach(content => {
+                if (content.id === tabName + '-content') {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
             });
 
-            // Update main content
-            mainContent.innerHTML = '';
-            tabData.main.forEach(section => {
-                const sectionDiv = document.createElement('div');
-                sectionDiv.id = section.id;
-
-                const header = document.createElement('h2');
-                header.textContent = section.title;
-                sectionDiv.appendChild(header);
-
-                const content = document.createElement('p');
-                content.textContent = section.content;
-                sectionDiv.appendChild(content);
-
-                mainContent.appendChild(sectionDiv);
+            // Update sidebar
+            const tabContent = document.getElementById(tabName + '-content');
+            const sections = tabContent.querySelectorAll('h2');
+            sidebarContent.innerHTML = '';
+            sections.forEach(section => {
+                const link = document.createElement('a');
+                link.href = '#' + section.parentElement.id;
+                link.textContent = section.textContent;
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById(section.parentElement.id).scrollIntoView({ behavior: 'smooth' });
+                });
+                sidebarContent.appendChild(link);
             });
         }
 

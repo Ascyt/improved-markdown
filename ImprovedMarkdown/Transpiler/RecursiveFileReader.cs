@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+using System.Transactions;
+
+namespace ImprovedMarkdown.Transpiler
+{
+    internal static class RecursiveFileReader
+    {
+        public static async Task<List<SplitData>> ReadFileRecursivelyAsync(string filePath, Stack<ParsedFile>? upperFiles = null, SplitData? importedFrom = null)
+        {
+            string fileContents = (await File.ReadAllTextAsync(filePath)).Replace("\r", "");
+            string[] lines = fileContents.Split('\n');
+            DirectoryInfo? workingDirectory = Directory.GetParent(filePath);
+
+            List<string> currentLines = new();
+            int startCurrentLinesIndex = 0;
+            // Output is split by imported files
+            List<SplitData> output = new();
+            upperFiles ??= new Stack<ParsedFile>();
+            ParsedFile parsedFile = new(filePath, upperFiles, importedFrom);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string trimmedLine = lines[i].Trim();
+
+                // Find imports of other files
+                if (trimmedLine.StartsWith("&"))
+                {
+                    AddCurrentLines();
+
+                    Stack<ParsedFile> newFileUpperFiles = new(upperFiles);
+                    newFileUpperFiles.Push(parsedFile);
+                    SplitData newFileImportedFrom = new(lines[i], parsedFile, i, 0);
+
+                    string newFilePath = trimmedLine.Substring(1);
+                    if (workingDirectory is not null)
+                    {
+                        newFilePath = Path.Join(workingDirectory.FullName, newFilePath);
+                    }
+                    
+                    output.AddRange(await ReadFileRecursivelyAsync(newFilePath, newFileUpperFiles, newFileImportedFrom));
+
+                    currentLines.Clear();
+                    startCurrentLinesIndex = i;
+                }
+
+                currentLines.Add(lines[i]);
+            }
+
+            AddCurrentLines();
+
+            return output;
+
+            void AddCurrentLines()
+            {
+                output.Add(new SplitData(string.Join("\n", currentLines), parsedFile, startCurrentLinesIndex, 0));
+            }
+        }
+    }
+}
