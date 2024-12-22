@@ -1,5 +1,14 @@
-﻿using ImprovedMarkdown.Transpiler;
+﻿using ImprovedMarkdown;
+using ImprovedMarkdown.Transpiler;
 using ImprovedMarkdown.Transpiler.Entities;
+
+string boilerplate;
+if (!File.Exists(Config.BOILERPLATE_FILE))
+{
+    Console.WriteLine($"Error: Boilerplate file {Config.BOILERPLATE_FILE} does not exist.");
+    return;
+}
+boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
 
 string filePath;
 
