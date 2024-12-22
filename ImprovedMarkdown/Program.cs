@@ -1,4 +1,5 @@
 ﻿using ImprovedMarkdown.Transpiler;
+using ImprovedMarkdown.Transpiler.Entities;
 
 string filePath;
 
@@ -17,6 +18,7 @@ if (!File.Exists(filePath))
     Console.WriteLine($"Error: File {filePath} does not exist.");
 }
     
-List<SplitData> data = await RecursiveFileReader.ReadFileRecursivelyAsync(filePath);
+List<SplitData> data = (await RecursiveFileReader.ReadFileRecursivelyAsync(filePath))
+    .SplitFilesByParts();
 
 _ = 0; // so it lets me set a breakpoint

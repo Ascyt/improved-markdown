@@ -1,13 +1,6 @@
-thasneuhuoaue
- 
- a
- u euoeaubthn udeoasu
- uuoauoao
- ueoeo
-  ueoeoaue
-  &test2.txt
-  ou
-  aeo
-  ueoaueoau
-  euoeaubthnuoeu
-  eoa
+ueoatsnueoht
+khtnq;hqsjknh;nsjt
+
+# Here is file test2.txt
+&test2.txt
+That was test2.txt imported 

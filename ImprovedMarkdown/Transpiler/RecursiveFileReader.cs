@@ -6,6 +6,8 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using ImprovedMarkdown.Transpiler.Entities;
+using ImprovedMarkdown.Transpiler.Entities.SyntaxTypes;
 
 namespace ImprovedMarkdown.Transpiler
 {
@@ -35,9 +37,9 @@ namespace ImprovedMarkdown.Transpiler
 
                     Stack<ParsedFile> newFileUpperFiles = new(upperFiles);
                     newFileUpperFiles.Push(parsedFile);
-                    SplitData newFileImportedFrom = new(lines[i], parsedFile, i, 0);
+                    string newFilePath = trimmedLine.Substring(1).Trim();
+                    SplitData newFileImportedFrom = new(newFilePath, parsedFile, i, 0, new SyntaxTypeImport());
 
-                    string newFilePath = trimmedLine.Substring(1);
                     if (workingDirectory is not null)
                     {
                         newFilePath = Path.Join(workingDirectory.FullName, newFilePath);
@@ -47,8 +49,10 @@ namespace ImprovedMarkdown.Transpiler
 
                     currentLines.Clear();
                     startCurrentLinesIndex = i;
-                }
 
+                    continue;
+                }
+                
                 currentLines.Add(lines[i]);
             }
 
@@ -58,7 +62,7 @@ namespace ImprovedMarkdown.Transpiler
 
             void AddCurrentLines()
             {
-                output.Add(new SplitData(string.Join("\n", currentLines), parsedFile, startCurrentLinesIndex, 0));
+                output.Add(new SplitData(string.Join("\n", currentLines), parsedFile, startCurrentLinesIndex, 0, new SyntaxTypeFile()));
             }
         }
     }
