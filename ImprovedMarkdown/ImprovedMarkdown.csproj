@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="NUglify" Version="1.21.11" />
+    <PackageReference Include="PowerArgs" Version="4.0.3" />
   </ItemGroup>
 
 </Project>

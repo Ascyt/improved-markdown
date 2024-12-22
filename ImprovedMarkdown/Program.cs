@@ -1,33 +1,33 @@
 ﻿using ImprovedMarkdown;
 using ImprovedMarkdown.Transpiler;
 using ImprovedMarkdown.Transpiler.Entities;
+using PowerArgs;
+
+ProgramArgs pArgs;
+try
+{
+    pArgs = Args.Parse<ProgramArgs>(args);
+}
+catch (ArgException ex)
+{
+    Console.WriteLine(ex.Message);
+    Console.WriteLine(ArgUsage.GenerateUsageFromTemplate<ProgramArgs>());
+    return 1;
+}
 
 string boilerplate;
 if (!File.Exists(Config.BOILERPLATE_FILE))
 {
     Console.WriteLine($"Error: Boilerplate file {Config.BOILERPLATE_FILE} does not exist.");
-    return;
+    return 1;
 }
 boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
-
-string filePath;
-
-if (args.Length == 0)
-{
-    Console.Write("Enter file path: ");
-    filePath = Console.ReadLine()!;
-}
-else
-{
-     filePath = string.Join(" ", args);
-}
-
-if (!File.Exists(filePath))
-{
-    Console.WriteLine($"Error: File {filePath} does not exist.");
-}
     
-List<SplitData> data = (await RecursiveFileReader.ReadFileRecursivelyAsync(filePath))
-    .SplitFilesByParts();
+string output = (await RecursiveFileReader.ReadFileRecursivelyAsync(pArgs.InputFile))
+    .SplitFilesByParts()
+    .BuildHtmlComponents()
+    .InjectInto(boilerplate);
 
-_ = 0; // so it lets me set a breakpoint
+File.WriteAllText(pArgs.OutputFile, output);
+
+return 0;

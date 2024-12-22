@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImprovedMarkdown": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"C:\\Users\\filip\\Documents\\improved-markdown\\test1.txt\"\r\n-o \"C:\\Users\\filip\\Documents\\improved-markdown\\index.html\""
+    }
+  }
+}

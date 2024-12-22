@@ -50,6 +50,12 @@ namespace ImprovedMarkdown.Transpiler
 
                     string arg = line.Substring(headingCount).Trim();
 
+                    if (arg.Length == 0)
+                    {
+                        throw new SyntaxException(data.File.FullStack, i, i, headingCount, headingCount,
+                            $"Argument expected");
+                    }
+
                     SplitData newSplitData = new(arg, data.File, i, line.IndexOf(arg), new SyntaxTypeHeader(headingCount));
                     output.Add(newSplitData);
 
