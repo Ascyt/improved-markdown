@@ -1,6 +1,19 @@
-ueoatsnueoht
-khtnq;hqsjknh;nsjt
+@ Tab 1
 
-# Here is file test2.txt
-&test2.txt
-That was test2.txt imported 
+# Section 1
+text
+
+## Subsection 1
+text 2
+
+@ Tab 2
+# Section 2
+text 3
+
+## Subsection 2
+text 4
+
+# Section 3
+No subsection
+
+Text 6

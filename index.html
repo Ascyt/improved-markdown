@@ -29,11 +29,11 @@
             font-size: 24px;
         }
 
-        #tabs {
+        #navbar {
             display: flex;
         }
 
-        #tabs .tab-button {
+        #navbar .tab-button {
             margin-left: 10px;
             padding: 6px 12px;
             background-color: #e0e0e0;
@@ -42,7 +42,7 @@
             font-size: 16px;
         }
 
-        #tabs .tab-button.active {
+        #navbar .tab-button.active {
             background-color: #ccc;
             font-weight: bold;
         }
@@ -132,10 +132,8 @@
     <!-- Header -->
     <div id="header">
         <div id="title">Document Title</div>
-        <div id="tabs">
-            <button class="tab-button active" data-tab="tab1">Tab 1</button>
-            <button class="tab-button" data-tab="tab2">Tab 2</button>
-            <button class="tab-button" data-tab="tab3">Tab 3</button>
+        <div id="navbar">
+            <button class="tab-button" id="TAB-BTN_tab-1" onclick="onTabClick('tab-1')">Tab 1</button><button class="tab-button" id="TAB-BTN_tab-2" onclick="onTabClick('tab-2')">Tab 2</button>
         </div>
     </div>
 
@@ -144,37 +142,32 @@
         <!-- Sidebar -->
         <div id="sidebar">
             <div id="sidebar-content">
-                <!-- Sidebar content will be loaded here -->
+                <div class="tab-sidebar" id="TAB-SIDEBAR_tab-1"><a id="SECTION-BTN_section-1" href="#SECTION_section-1" onclick="onSectionClick('section-1')">Section 1</a></div><div class="tab-sidebar" id="TAB-SIDEBAR_tab-2"><a id="SECTION-BTN_section-2" href="#SECTION_section-2" onclick="onSectionClick('section-2')">Section 2</a><a id="SECTION-BTN_section-3" href="#SECTION_section-3" onclick="onSectionClick('section-3')">Section 3</a></div>
             </div>
             <div id="sidebar-resizer"></div>
         </div>
 
         <!-- Main Content -->
         <div id="main">
-            <!-- Tab 1 Content -->
-            <div class="tab-content" id="tab1-content">
-                <p>ueoatsnueoht
-khtnq;hqsjknh;nsjt</p><div id="here-is-file-test2txt"><h1>Here is file test2.txt</h1><p>This is file test2.txt</p><p>That was test2.txt imported</p>
-            </div>
+            <div class="tab" id="TAB_tab-1"><div class="section" id="SECTION_section-1"><h1>Section 1</h1><p>text</p><h2>Subsection 1</h2><p>text 2</p></div></div><div class="tab" id="TAB_tab-2"><div class="section" id="SECTION_section-2"><h1>Section 2</h1><p>text 3</p><h2>Subsection 2</h2><p>text 4</p></div><div class="section" id="SECTION_section-3"><h1>Section 3</h1><p>No subsection
+
+Text 6</p></div></div>
         </div>
     </div>
 
     <script>
-        // Current tab
-        let currentTab = 'tab1';
+        let currentTab = '';
 
-        // Elements
         const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const sidebarContent = document.getElementById('sidebar-content');
+        const tabContents = document.querySelectorAll('.tab');
+        const tabSidebars = document.querySelectorAll('.tab-sidebar');
 
-        // Load content for a tab
-        function loadTab(tabName) {
-            currentTab = tabName;
+        function onTabClick(tabId) {
+            currentTab = tabId;
 
             // Update tab buttons
             tabButtons.forEach(btn => {
-                if (btn.dataset.tab === tabName) {
+                if (btn.id === "TAB-BTN_" + tabId) {
                     btn.classList.add('active');
                 } else {
                     btn.classList.remove('active');
@@ -183,38 +176,29 @@ khtnq;hqsjknh;nsjt</p><div id="here-is-file-test2txt"><h1>Here is file test2.txt
 
             // Update tab contents
             tabContents.forEach(content => {
-                if (content.id === tabName + '-content') {
+                if (content.id === "TAB_" + tabId) {
                     content.style.display = 'block';
                 } else {
                     content.style.display = 'none';
                 }
             });
 
-            // Update sidebar
-            const tabContent = document.getElementById(tabName + '-content');
-            const sections = tabContent.querySelectorAll('h2');
-            sidebarContent.innerHTML = '';
-            sections.forEach(section => {
-                const link = document.createElement('a');
-                link.href = '#' + section.parentElement.id;
-                link.textContent = section.textContent;
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.getElementById(section.parentElement.id).scrollIntoView({ behavior: 'smooth' });
-                });
-                sidebarContent.appendChild(link);
+            tabSidebars.forEach(sidebar => {
+                if (sidebar.id === "TAB-SIDEBAR_" + tabId) {
+                    sidebar.style.display = 'block';
+                } else {
+                    sidebar.style.display = 'none';
+                }
             });
+
+            // Update sidebar
+            //const tabContent = document.getElementById(tabId);
+            //const sections = tabContent.querySelectorAll('h1');
         }
 
-        // Initialize tabs
-        tabButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                loadTab(button.dataset.tab);
-            });
-        });
-
         // Load initial tab
-        loadTab(currentTab);
+        if (tabButtons.length > 0)
+            tabButtons[0].click();
 
         // Resizable sidebar
         const sidebar = document.getElementById('sidebar');

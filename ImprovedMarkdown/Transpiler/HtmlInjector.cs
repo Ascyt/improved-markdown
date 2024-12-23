@@ -12,6 +12,8 @@ namespace ImprovedMarkdown.Transpiler
         public static string InjectInto(this HtmlComponents components, string html)
         {
             return html
+                .Replace("{{SIDEBAR}}", components.Sidebar)
+                .Replace("{{NAVBAR}}", components.Navbar)
                 .Replace("{{BODY}}", components.Body);
         }
     }

@@ -62,6 +62,24 @@ namespace ImprovedMarkdown.Transpiler
                     continue;
                 }
 
+                // Tabs
+                if (line.StartsWith("@"))
+                {
+                    ParagraphFinished();
+
+                    string arg = line.Substring(1).Trim();
+
+                    if (arg.Length == 0)
+                    {
+                        throw new SyntaxException(data.File.FullStack, i, i, 1, 1,
+                            $"Argument expected");
+                    }
+
+                    SplitData newSplitData = new(arg, data.File, i, line.IndexOf(arg), new SyntaxTypeTab());
+                    output.Add(newSplitData);
+
+                    continue;
+                }
 
                 if (lineStartCurrent == -1)
                 {
@@ -80,7 +98,11 @@ namespace ImprovedMarkdown.Transpiler
                 if (lineStartCurrent == -1)
                     return;
 
-                SplitData newSplitdata = new(current.ToString(), data.File, lineStartCurrent, 0, new SyntaxTypeParagraph());
+                string paragraph = current.ToString().Trim();
+                if (string.IsNullOrEmpty(paragraph))
+                    return;
+
+                SplitData newSplitdata = new(paragraph, data.File, lineStartCurrent, 0, new SyntaxTypeParagraph());
                 output.Add(newSplitdata);
 
                 lineStartCurrent = -1;
