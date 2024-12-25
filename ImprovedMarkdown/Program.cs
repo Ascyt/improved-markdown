@@ -22,13 +22,21 @@ if (!File.Exists(Config.BOILERPLATE_FILE))
     return 1;
 }
 boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
-    
-string output = (await RecursiveFileReader.ReadFileRecursivelyAsync(pArgs.InputFile))
-    .SplitFilesByParts()
-    .FormatParagraphs()
-    .BuildHtmlComponents()
-    .InjectInto(boilerplate);
 
+string output;
+try
+{
+    output = (await RecursiveFileReader.ReadFileRecursivelyAsync(pArgs.InputFile))
+        .SplitFilesByParts()
+        .FormatParagraphs()
+        .BuildHtmlComponents()
+        .InjectInto(boilerplate);
+}
+catch (SyntaxException e)
+{
+    e.Print();
+    return -1;
+}
 File.WriteAllText(pArgs.OutputFile, output);
 
 FileInfo outputFileInfo = new FileInfo(pArgs.OutputFile);

@@ -14,5 +14,10 @@ namespace ImprovedMarkdown.Transpiler.Entities
         public int ToRow { get; set; } = toRow;
         public int FromCol { get; set; } = fromCol;
         public int ToCol { get; set; } = toCol;
+
+        public void Print()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

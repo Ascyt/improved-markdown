@@ -1,7 +1,18 @@
 @ Tab 1
 
 # Section 1
-text
+text  
+Just one line after text
+
+empty line after text
+
+here is a backslash at the end \
+and the next line
+Also, two empty lines after text\z
+
+
+Backslash symbol: \\      
+And a new line\nWithin a line.
 
 ## Subsection 1
 text 2

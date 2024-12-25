@@ -89,8 +89,7 @@ namespace ImprovedMarkdown.Transpiler
 
                     if (!char.IsSymbol(c))
                     {
-                        throw new SyntaxException(data.File.FullStack, data.rowIndex, data.rowIndex, i - 1, i,
-                            $"Unknown escape sequence: \\{c}");
+                        ThrowException(i, $"Unknown escape sequence: \\{c}");
                     }
 
                     output.Append(c);
@@ -130,6 +129,16 @@ namespace ImprovedMarkdown.Transpiler
             {
                 output.Append(currentWhitespaces);
                 currentWhitespaces.Clear();
+            }
+
+            void ThrowException(int i, string message)
+            {
+                int linebreakCount = data.Contents.Count(c => c == '\n');
+                int lastLinebreak = data.Contents.LastIndexOf('\n');
+                if (lastLinebreak == -1)
+                    lastLinebreak = 0;
+                throw new SyntaxException(data.File.FullStack, data.rowIndex + linebreakCount, data.rowIndex - lastLinebreak, i - 1, i,
+                    message);
             }
         }
     }
