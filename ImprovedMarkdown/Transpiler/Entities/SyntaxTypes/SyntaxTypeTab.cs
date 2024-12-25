@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImprovedMarkdown.Transpiler.Entities.SyntaxTypes
 {
-    internal class SyntaxTypeTab : SyntaxType
+    internal class SyntaxTypeTab(string contents, ParsedFile file, int rowIndex, int colIndex) : SplitData(contents, file, rowIndex, colIndex)
     {
     }
 }

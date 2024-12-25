@@ -38,7 +38,7 @@ namespace ImprovedMarkdown.Transpiler
                     Stack<ParsedFile> newFileUpperFiles = new(upperFiles);
                     newFileUpperFiles.Push(parsedFile);
                     string newFilePath = trimmedLine.Substring(1).Trim();
-                    SplitData newFileImportedFrom = new(newFilePath, parsedFile, i, 0, new SyntaxTypeImport());
+                    SplitData newFileImportedFrom = new SyntaxTypeImport(newFilePath, parsedFile, i, 0);
 
                     if (workingDirectory is not null)
                     {
@@ -62,7 +62,7 @@ namespace ImprovedMarkdown.Transpiler
 
             void AddCurrentLines()
             {
-                output.Add(new SplitData(string.Join("\n", currentLines), parsedFile, startCurrentLinesIndex, 0, new SyntaxTypeFile()));
+                output.Add(new SyntaxTypeFile(string.Join("\n", currentLines), parsedFile, startCurrentLinesIndex, 0));
             }
         }
     }

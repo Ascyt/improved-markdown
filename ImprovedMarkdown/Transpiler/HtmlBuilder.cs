@@ -24,19 +24,19 @@ namespace ImprovedMarkdown.Transpiler
             HashSet<string> sectionIds = new();
             HashSet<string> tabIds = new();
 
-            bool tabsExist = data.Any(d => d.type is SyntaxTypeTab);
+            bool tabsExist = data.Any(d => d is SyntaxTypeTab);
 
             if (!tabsExist)
                 inTabId = "INDEX";
 
             foreach (SplitData part in data)
             {
-                if (part.type is SyntaxTypeParagraph partTypeParagraph)
+                if (part is SyntaxTypeParagraph partTypeParagraph)
                 {
                     StringBuilder paragraph = new($"<p>{part.Contents.Trim()}</p>");
                     body.Append(paragraph);
                 }   
-                if (part.type is SyntaxTypeHeader partTypeHeader)
+                if (part is SyntaxTypeHeader partTypeHeader)
                 {
                     if (partTypeHeader.Depth == 1)
                     {
@@ -66,7 +66,7 @@ namespace ImprovedMarkdown.Transpiler
                     }
                     body.Append($"<h{partTypeHeader.Depth}>{part.Contents}</h{partTypeHeader.Depth}>");
                 }
-                if (part.type is SyntaxTypeTab partTypeTab)
+                if (part is SyntaxTypeTab partTypeTab)
                 {
                     StringBuilder tabStart = new();
                     string tabId = part.Contents.FormatStringToId(tabIds);

@@ -17,13 +17,13 @@ namespace ImprovedMarkdown.Transpiler
 
             foreach (SplitData splitData in data)
             {
-                output.AddRange(SpitSingleFileByPart(splitData));
+                output.AddRange(SpitSingleFileByParts(splitData));
             }
 
             return output;
         }
 
-        private static List<SplitData> SpitSingleFileByPart(SplitData data)
+        private static List<SplitData> SpitSingleFileByParts(SplitData data)
         {
             List<SplitData> output = new();
 
@@ -56,7 +56,7 @@ namespace ImprovedMarkdown.Transpiler
                             $"Argument expected");
                     }
 
-                    SplitData newSplitData = new(arg, data.File, i, line.IndexOf(arg), new SyntaxTypeHeader(headingCount));
+                    SplitData newSplitData = new SyntaxTypeHeader(arg, data.File, i, line.IndexOf(arg), headingCount);
                     output.Add(newSplitData);
 
                     continue;
@@ -75,7 +75,7 @@ namespace ImprovedMarkdown.Transpiler
                             $"Argument expected");
                     }
 
-                    SplitData newSplitData = new(arg, data.File, i, line.IndexOf(arg), new SyntaxTypeTab());
+                    SplitData newSplitData = new SyntaxTypeTab(arg, data.File, i, line.IndexOf(arg));
                     output.Add(newSplitData);
 
                     continue;
@@ -102,7 +102,7 @@ namespace ImprovedMarkdown.Transpiler
                 if (string.IsNullOrEmpty(paragraph))
                     return;
 
-                SplitData newSplitdata = new(paragraph, data.File, lineStartCurrent, 0, new SyntaxTypeParagraph());
+                SplitData newSplitdata = new SyntaxTypeParagraph(paragraph, data.File, lineStartCurrent, 0);
                 output.Add(newSplitdata);
 
                 lineStartCurrent = -1;

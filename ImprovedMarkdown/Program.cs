@@ -30,4 +30,11 @@ string output = (await RecursiveFileReader.ReadFileRecursivelyAsync(pArgs.InputF
 
 File.WriteAllText(pArgs.OutputFile, output);
 
+FileInfo outputFileInfo = new FileInfo(pArgs.OutputFile);
+
+if (outputFileInfo.Exists)
+{
+    Console.WriteLine($"Saved file to `{outputFileInfo.FullName}` ({outputFileInfo.Length} bytes)");
+}
+
 return 0;
