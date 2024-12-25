@@ -25,6 +25,7 @@ boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
     
 string output = (await RecursiveFileReader.ReadFileRecursivelyAsync(pArgs.InputFile))
     .SplitFilesByParts()
+    .FormatParagraphs()
     .BuildHtmlComponents()
     .InjectInto(boilerplate);
 

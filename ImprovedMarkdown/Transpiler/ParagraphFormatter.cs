@@ -1,5 +1,6 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
 using ImprovedMarkdown.Transpiler.Entities.SyntaxTypes;
+using NUglify.Html;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,26 +13,124 @@ namespace ImprovedMarkdown.Transpiler
     {
         public static List<SplitData> FormatParagraphs(this List<SplitData> data)
         {
-            List<SplitData> output = new();
+            List<SplitData> output = [..data];
 
-            foreach (SplitData part in data)
+            foreach (SplitData part in output)
             {
-                if (part is SyntaxTypeParagraph)
+                if (part is SyntaxTypeParagraph partTypeParagraph)
                 {
-
-                }
-                else
-                {
-                    output.Add(part);
+                    part.Contents = FormatSingleParagraph(partTypeParagraph);
                 }
             }
 
-            throw new NotImplementedException();
+            return output;
         }
 
-        private static List<SplitData> FormatSingleParagraph(SplitData data)
+        private static string FormatSingleParagraph(SyntaxTypeParagraph data)
         {
-            throw new NotImplementedException();
+            string contents = data.Contents;
+
+            int asteriskBalance = 0;
+            bool isCurrentlyEscaped = false;
+            bool previousIsLinebreak = false;
+
+            StringBuilder output = new();
+            StringBuilder currentWhitespaces = new(); // whitespaces before \n should be ignored, otherwise added
+
+            for (int i = 0; i < contents.Length; i++)
+            {
+                char c = contents[i];
+
+                if (c == '\r')
+                    continue; // fuck you
+
+                if (c == '\\')
+                {
+                    if (isCurrentlyEscaped) // double backslash
+                    {
+                        isCurrentlyEscaped = false;
+                        output.Append('\\');
+                        continue;
+                    }
+                    isCurrentlyEscaped = true;
+
+                    previousIsLinebreak = false;
+                    AddWhitespaces();
+                    continue;
+                }
+
+                if (isCurrentlyEscaped)
+                {
+                    isCurrentlyEscaped = false;
+
+                    bool escapeDone = false;
+                    switch (c)
+                    {
+                        case 'n':
+                            output.Append("<br>");
+                            escapeDone = true;  
+                            break;
+                        case 't':
+                            output.Append('\t');
+                            escapeDone = true;
+                            break;
+                        // TODO: Add support for unicode escape characters with \[{hex code}]
+                    }
+                    if (escapeDone)
+                        continue;
+
+                    if (c == '\n') // backslash at the end of line
+                    {
+                        output.Append("<br>");
+
+                        currentWhitespaces.Clear();
+                        continue;
+                    }
+
+                    if (!char.IsSymbol(c))
+                    {
+                        throw new SyntaxException(data.File.FullStack, data.rowIndex, data.rowIndex, i - 1, i,
+                            $"Unknown escape sequence: \\{c}");
+                    }
+
+                    output.Append(c);
+                }
+
+                if (c == '\n')
+                {
+                    currentWhitespaces.Clear();
+
+                    if (previousIsLinebreak) // double linebreak
+                    {
+                        output.Append("<br>");
+                    }
+                    else // singular linebreak only adds a space
+                    {
+                        output.Append(" ");
+                    }
+                    previousIsLinebreak = true;
+
+                    continue;
+                }
+                if (char.IsWhiteSpace(c))
+                {
+                    currentWhitespaces.Append(c);
+                    continue;
+                }
+
+                previousIsLinebreak = false;
+                AddWhitespaces();
+
+                output.Append(c);
+            }
+
+            return output.ToString();
+
+            void AddWhitespaces()
+            {
+                output.Append(currentWhitespaces);
+                currentWhitespaces.Clear();
+            }
         }
     }
 }
