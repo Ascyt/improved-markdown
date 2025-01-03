@@ -30,7 +30,6 @@ namespace ImprovedMarkdown.Transpiler
         {
             string contents = data.Contents;
 
-            int asteriskBalance = 0;
             bool isCurrentlyEscaped = false;
             bool previousIsLinebreak = false;
 
@@ -133,11 +132,14 @@ namespace ImprovedMarkdown.Transpiler
 
             void ThrowException(int i, string message)
             {
-                int linebreakCount = data.Contents.Count(c => c == '\n');
-                int lastLinebreak = data.Contents.LastIndexOf('\n');
-                if (lastLinebreak == -1)
-                    lastLinebreak = 0;
-                throw new SyntaxException(data.File.FullStack, data.rowIndex + linebreakCount, data.rowIndex - lastLinebreak, i - 1, i,
+                string beforeContents = data.Contents.Substring(0, i);
+
+                int linebreakCount = beforeContents.Count(c => c == '\n');
+                int lastLinebreak = beforeContents.LastIndexOf('\n');
+                int row = data.rowIndex + linebreakCount;
+                int col = i - lastLinebreak;
+
+                throw new SyntaxException(data.File.FullStack, row, row, col, col + 1,
                     message);
             }
         }

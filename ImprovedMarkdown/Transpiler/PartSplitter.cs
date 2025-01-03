@@ -98,14 +98,16 @@ namespace ImprovedMarkdown.Transpiler
                 if (lineStartCurrent == -1)
                     return;
 
+                int row = lineStartCurrent + 1;
+                lineStartCurrent = -1;
+
                 string paragraph = current.ToString().Trim();
                 if (string.IsNullOrEmpty(paragraph))
                     return;
 
-                SplitData newSplitdata = new SyntaxTypeParagraph(paragraph, data.File, lineStartCurrent, 0);
+                SplitData newSplitdata = new SyntaxTypeParagraph(paragraph, data.File, row, 0);
                 output.Add(newSplitdata);
 
-                lineStartCurrent = -1;
                 current = new StringBuilder("");
             }
         }

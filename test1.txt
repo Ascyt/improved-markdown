@@ -8,7 +8,7 @@ empty line after text
 
 here is a backslash at the end \
 and the next line
-Also, two empty lines after text\z
+Also, two empty lines after text\zYeahhh lol
 
 
 Backslash symbol: \\      

@@ -17,7 +17,30 @@ namespace ImprovedMarkdown.Transpiler.Entities
 
         public void Print()
         {
-            throw new NotImplementedException();
+            ConsoleColor previousColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.WriteLine($"Syntax Error:");
+            Console.WriteLine($"\t{Message}");
+            Console.WriteLine();
+            Console.WriteLine($"In file: {FileStack.First().FilePath}");
+
+            string row = FromRow == ToRow ? $"row {FromRow}" : $"rows {FromRow}-{ToRow}";
+            string col = FromCol == ToCol ? $"column {FromCol}" : $"columns {FromCol}-{ToCol}";
+
+            Console.WriteLine($"At {row}, {col}");
+            Console.WriteLine();
+            Console.WriteLine("File stack:");
+            foreach (ParsedFile file in FileStack)
+            {
+                Console.WriteLine($"\tFile: {file.FilePath}");
+                if (file.ImportedFrom is not null)
+                    Console.WriteLine($"\t\tImported in: {file.ImportedFrom.File.FilePath}; row {file.ImportedFrom.rowIndex}, column {file.ImportedFrom.colIndex}");
+                else
+                    Console.WriteLine("\t\tRoot file");
+            }
+
+            Console.ForegroundColor = previousColor;
         }
     }
 }
