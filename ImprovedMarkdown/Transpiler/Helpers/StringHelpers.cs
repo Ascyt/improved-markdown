@@ -37,5 +37,17 @@ namespace ImprovedMarkdown.Transpiler.Helpers
 
             return idNonRepeating;
         }
+
+        public static string Repeat(this string str, int count)
+        {
+            StringBuilder sb = new();
+
+            for (int i = 0; i < count; i++)
+            {
+                sb.Append(str);
+            }
+
+            return sb.ToString();
+        }
     }
 }

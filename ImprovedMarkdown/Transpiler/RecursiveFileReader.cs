@@ -24,7 +24,7 @@ namespace ImprovedMarkdown.Transpiler
             // Output is split by imported files
             List<SplitData> output = new();
             upperFiles ??= new Stack<ParsedFile>();
-            ParsedFile parsedFile = new(filePath, upperFiles, importedFrom);
+            ParsedFile parsedFile = new(filePath, fileContents, upperFiles, importedFrom);
 
             for (int i = 0; i < lines.Length; i++)
             {

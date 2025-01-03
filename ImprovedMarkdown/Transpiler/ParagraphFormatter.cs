@@ -86,12 +86,13 @@ namespace ImprovedMarkdown.Transpiler
                         continue;
                     }
 
-                    if (!char.IsSymbol(c))
+                    if (!char.IsSymbol(c) && !"*".Contains(c))
                     {
                         ThrowException(i, $"Unknown escape sequence: \\{c}");
                     }
 
                     output.Append(c);
+                    continue;
                 }
 
                 if (c == '\n')
