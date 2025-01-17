@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace ImprovedMarkdown.Transpiler.Entities
 {
-    internal class ParsedFile(string filePath, string fullContents, Stack<ParsedFile> upperFiles, SplitData? importedFrom)
+    internal class ParsedFile(string filePath, string directoryTree, string fullContents, Stack<ParsedFile> upperFiles, SplitData? importedFrom)
     {
         public string FilePath = filePath;
+        public string DirectoryTree = directoryTree;
         public string FullContents = fullContents;
         public Stack<ParsedFile> UpperFiles { get; set; } = upperFiles;
         public Stack<ParsedFile> FullStack { get {

@@ -23,23 +23,35 @@ if (!File.Exists(Config.BOILERPLATE_FILE))
 }
 boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
 
-string output;
 try
 {
-    output = (await RecursiveFileReader.ReadFileRecursivelyAsync(pArgs.InputFile))
-        .SplitFilesByParts()
-        .FormatParagraphs()
-        .BuildHtmlComponents()
-        .InjectInto(boilerplate);
+    var tasks = DirectoryTreeReader.ReadDirectoryTree(pArgs.InputDir)
+        .Select(async s => new
+        {
+            Key = s,
+            Value = (await RecursiveFileReader.ReadFileRecursivelyAsync(Path.Join(pArgs.InputDir, s.TrimStart('/')) + ".md", s))
+                .SplitFilesByParts()
+                .FormatParagraphs()
+                .BuildHtmlComponents()
+                .InjectInto(boilerplate)
+        });
+
+    var results = await Task.WhenAll(tasks);
+
+    Dictionary<string, string> outputFiles = results.ToDictionary(x => x.Key, x => x.Value);
+
+    await outputFiles.WriteDirectoryTree(pArgs.OutputDir);
 }
 catch (SyntaxException e)
 {
     e.Print();
     return -1;
 }
-File.WriteAllText(pArgs.OutputFile, output);
 
-FileInfo outputFileInfo = new FileInfo(pArgs.OutputFile);
+
+//File.WriteAllText(pArgs.OutputDir, output);
+
+FileInfo outputFileInfo = new FileInfo(pArgs.OutputDir);
 
 if (outputFileInfo.Exists)
 {

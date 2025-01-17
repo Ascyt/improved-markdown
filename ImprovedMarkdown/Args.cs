@@ -11,10 +11,10 @@ namespace ImprovedMarkdown
     {
         [ArgShortcut("-i")]
         [ArgRequired(PromptIfMissing = true)]
-        public string InputFile { get; set; }
+        public string InputDir { get; set; }
 
         [ArgShortcut("-o")]
         [ArgRequired(PromptIfMissing = true)]
-        public string OutputFile { get; set; }
+        public string OutputDir { get; set; }
     }
 }

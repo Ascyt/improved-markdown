@@ -10,7 +10,7 @@ here is a backslash at the end \
 and the next line
 Also, two emptynes after text\*Yeahhh lol
 
-Backslash symbol: \\      
+Backslash symbol: \\
 And a new line\nWithin a line.
 
 ## Subsection 1

@@ -134,7 +134,7 @@
     <div id="header">
         <div id="title">Document Title</div>
         <div id="navbar">
-            {{NAVBAR}}
+            <button class="tab-button" id="TAB-BTN_yep" onclick="onTabClick('yep')">Yep</button>
         </div>
     </div>
 
@@ -143,14 +143,14 @@
         <!-- Sidebar -->
         <div id="sidebar">
             <div id="sidebar-content">
-                {{SIDEBAR}}
+                <div class="tab-sidebar" id="TAB-SIDEBAR_yep"><a id="SECTION-BTN_uhhh" href="#SECTION_uhhh" onclick="onSectionClick('uhhh')">Uhhh</a></div>
             </div>
             <div id="sidebar-resizer"></div>
         </div>
 
         <!-- Main Content -->
         <div id="main">
-            {{BODY}}
+            <div class="tab" id="TAB_yep"><div class="section" id="SECTION_uhhh"><h1>Uhhh</h1><p>Not much to see here</p></div></div>
         </div>
     </div>
 
