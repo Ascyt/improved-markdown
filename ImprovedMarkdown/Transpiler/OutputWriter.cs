@@ -18,6 +18,7 @@ namespace ImprovedMarkdown.Transpiler
             Directory.CreateDirectory(outputDir);
 
             // Iterate over each file entry in the dictionary
+            List<Task> tasks = new();
             foreach (var entry in files)
             {
                 // Construct the full path for the file
@@ -32,8 +33,10 @@ namespace ImprovedMarkdown.Transpiler
                 }
 
                 // Write the file content asynchronously
-                await File.WriteAllTextAsync(fullPath, entry.Value);
+                tasks.Add(File.WriteAllTextAsync(fullPath, entry.Value));
             }
+
+            await Task.WhenAll(tasks);
         }
     }
 }
