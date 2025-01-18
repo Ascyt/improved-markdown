@@ -18,11 +18,16 @@ And a new line\nWithin a line.
 
 Tab: "\t", amogus: "\x[D9E]"
 
-This is an `inline code` thing
+This is an `inline code` thing 
 
-\[
-f'(x) = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
-\]
+super^script^ and ~~strikethrough~~
+
+latex code $E = mc^2$ test
+
+Block equation:
+$$
+\int_{a}^{b} x^2 \, dx
+$$
 
 And here is a code block:
 ```csharp

@@ -1,5 +1,7 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
 using ImprovedMarkdown.Transpiler.Entities.SyntaxTypes;
+using Markdig;
+using Markdig.SyntaxHighlighting;
 using System.Text;
 
 namespace ImprovedMarkdown.Transpiler
@@ -23,7 +25,26 @@ namespace ImprovedMarkdown.Transpiler
         }
         private static string FormatSingleParagraph(SyntaxTypeParagraph data)
         {
-            return Markdig.Markdown.ToHtml(data.Contents);
+            return Markdown.ToHtml(data.Contents, new MarkdownPipelineBuilder()
+                .UsePipeTables()
+                .UseEmphasisExtras()
+                .UseGridTables()
+                .UseGenericAttributes()
+                .UseDefinitionLists()
+                .UseFootnotes()
+                .UseAutoLinks()
+                .UseTaskLists()
+                .UseListExtras()
+                .UseMediaLinks()
+                .UseAbbreviations()
+                .UseFigures()
+                .UseFooters()
+                .UseCustomContainers()
+                .UseMathematics()
+                .UseDiagrams()
+                .UseAdvancedExtensions()
+                .UseSyntaxHighlighting()
+                .Build());
         }
     }
 }
