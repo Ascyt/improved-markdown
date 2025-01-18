@@ -5,20 +5,43 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ImprovedMarkdown.Transpiler.Entities.Paragraph
-{ 
+{
     public enum ParagraphTokenType
     {
         Text,
         Whitespace,
         NewLine,
-        LineBreak,
-        Tab,
         EmptyLine,
         Asterisk,
-        DoubleAsterisk
+        Underscore,
+        Tilde,
+        Backtick,
+        TripleBacktick,
+        OpenParen,
+        CloseParen,
+        OpenBracket,
+        CloseBracket,
+        Exclamation,
+        Dash,
+        Plus,
+        Number,
+        Period,
+        GreaterThan,
+        VerticalBar, // For tables
+        HexUnicode,
+        Space,
+        CheckboxUnchecked,
+        CheckboxChecked,
+        Tab,
+        LineBreak,
+        HorizontalRule,
+        DoubleUnderscore,
+        DoubleTilde,
+        DoubleAsterisk,
+        Bullet
     }
 
-    class ParagraphToken
+    public class ParagraphToken
     {
         public ParagraphTokenType Type { get; }
         public string Value { get; }
