@@ -52,6 +52,8 @@ try
 
     await rootDir.WriteDirectoryTree(pArgs.OutputDir);
     await rootDir.WriteIndexFiles(pArgs.OutputDir, indexBoilerplate);
+
+    await pArgs.InputDir.CopyResourcesRecursivelyTo(pArgs.OutputDir);
 }
 catch (SyntaxException e)
 {
