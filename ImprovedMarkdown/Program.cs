@@ -23,6 +23,14 @@ if (!File.Exists(Config.BOILERPLATE_FILE))
 }
 boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
 
+string indexBoilerplate;
+if (!File.Exists(Config.INDEX_BOILERPLATE_FILE))
+{
+Console.WriteLine($"Error: Index boilerplate file {Config.INDEX_BOILERPLATE_FILE} does not exist.");
+return 1;
+}
+indexBoilerplate = await File.ReadAllTextAsync(Config.INDEX_BOILERPLATE_FILE);
+
 try
 {
     var tasks = DirectoryTreeReader.ReadDirectoryTree(pArgs.InputDir)
@@ -38,9 +46,11 @@ try
 
     var results = await Task.WhenAll(tasks);
 
-    Dictionary<string, string> outputFiles = results.ToDictionary(x => x.Key, x => x.Value);
+    DirectoryNode rootDir = results
+        .ToDictionary(x => x.Key, x => x.Value)
+        .BuildDirectoryTree();
 
-    await outputFiles.WriteDirectoryTree(pArgs.OutputDir);
+    await rootDir.WriteDirectoryTree(pArgs.OutputDir);
 }
 catch (SyntaxException e)
 {

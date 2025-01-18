@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImprovedMarkdown.Transpiler.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,8 @@ using System.Threading.Tasks;
 namespace ImprovedMarkdown.Transpiler
 {
     internal static class OutputWriter
-    { 
-        public static async Task WriteDirectoryTree(this Dictionary<string, string> files, string outputDir)
+    {
+        public static async Task WriteDirectoryTree(this DirectoryNode root, string outputDir)
         {
             // Ensure the output directory exists, and clear it if it does
             if (Directory.Exists(outputDir))
@@ -17,23 +18,27 @@ namespace ImprovedMarkdown.Transpiler
             }
             Directory.CreateDirectory(outputDir);
 
-            // Iterate over each file entry in the dictionary
+            // Start the recursive writing process
+            await WriteNodeAsync(root, outputDir);
+        }
+
+        private static async Task WriteNodeAsync(DirectoryNode node, string currentPath)
+        {
             List<Task> tasks = new();
-            foreach (var entry in files)
+
+            // Write all files in the current directory
+            foreach (var file in node.Files)
             {
-                // Construct the full path for the file
-                string relativePath = entry.Key.TrimStart('/');
-                string fullPath = Path.Combine(outputDir, relativePath) + ".html";
+                string filePath = Path.Combine(currentPath, file.Key) + ".html";
+                tasks.Add(File.WriteAllTextAsync(filePath, file.Value));
+            }
 
-                // Ensure the directory for the file exists
-                string directoryPath = Path.GetDirectoryName(fullPath)!;
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                // Write the file content asynchronously
-                tasks.Add(File.WriteAllTextAsync(fullPath, entry.Value));
+            // Recursively write all subdirectories
+            foreach (var directory in node.Directories)
+            {
+                string directoryPath = Path.Combine(currentPath, directory.Key);
+                Directory.CreateDirectory(directoryPath);
+                tasks.Add(WriteNodeAsync(directory.Value, directoryPath));
             }
 
             await Task.WhenAll(tasks);

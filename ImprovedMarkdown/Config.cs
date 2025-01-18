@@ -8,6 +8,7 @@ namespace ImprovedMarkdown
 {
     internal static class Config
     {
-        public const string BOILERPLATE_FILE = "../../../../boilerplate.html"; 
+        public const string BOILERPLATE_FILE = "../../../../boilerplate.html";
+        public const string INDEX_BOILERPLATE_FILE = "../../../../index-boilerplate.html";
     }
 }

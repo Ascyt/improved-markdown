@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{TITLE}}</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Basic styles */
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        #header {
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+
+        #title {
+            flex: 1;
+            font-size: 24px;
+        }
+
+        #content {
+            display: flex;
+            height: calc(100% - 50px); /* Adjust based on header height */
+        }
+        
+        #main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #main h2 {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        #main p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        #files {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header">
+        <div id="title">{{TITLE}}</div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="content">
+        <!-- Main Content -->
+        <div id="main">
+            <div id="files">
+                <h2>Files</h2>
+                {{FILES}}
+            </div>
+            <div id="directories">
+                <h2>Directories</h2>
+                {{DIRECTORIES}}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
