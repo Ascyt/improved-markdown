@@ -1,11 +1,7 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
 using ImprovedMarkdown.Transpiler.Entities.SyntaxTypes;
-using NUglify.Html;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using ImprovedMarkdown.Transpiler.Entities.Paragraph;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ImprovedMarkdown.Transpiler
 {
@@ -13,135 +9,226 @@ namespace ImprovedMarkdown.Transpiler
     {
         public static List<SplitData> FormatParagraphs(this List<SplitData> data)
         {
-            List<SplitData> output = [..data];
+            List<SplitData> output = [.. data];
 
             foreach (SplitData part in output)
             {
                 if (part is SyntaxTypeParagraph partTypeParagraph)
                 {
+                    partTypeParagraph.Contents = partTypeParagraph.Contents.Replace("\r", "");
                     part.Contents = FormatSingleParagraph(partTypeParagraph);
                 }
             }
 
             return output;
         }
-
         private static string FormatSingleParagraph(SyntaxTypeParagraph data)
         {
             string contents = data.Contents;
+            List<ParagraphToken> tokens = ParagraphTokenize(contents);
+            int index = 0;
+            ParagraphNode? ast = ParseContent(tokens, ref index);
+            string html = RenderNodes(ast);
+            return html;
 
-            bool isCurrentlyEscaped = false;
-            bool previousIsLinebreak = false;
-
-            StringBuilder output = new();
-            StringBuilder currentWhitespaces = new(); // whitespaces before \n should be ignored, otherwise added
-
-            for (int i = 0; i < contents.Length; i++)
+            // ParagraphTokenization step: Convert the input string into a list of tokens
+            List<ParagraphToken> ParagraphTokenize(string text)
             {
-                char c = contents[i];
-
-                if (c == '\r')
-                    continue; // fuck you
-
-                if (c == '\\')
+                List<ParagraphToken> tokens = new();
+                int i = 0;
+                while (i < text.Length)
                 {
-                    if (isCurrentlyEscaped) // double backslash
+                    char c = text[i];
+
+                    if (c == '\\')
                     {
-                        isCurrentlyEscaped = false;
-                        output.Append('\\');
+                        // Handle escape sequences
+                        if (i + 1 < text.Length)
+                        {
+                            char nextChar = text[i + 1];
+                            switch (nextChar)
+                            {
+                                case 'n':
+                                    tokens.Add(new ParagraphToken(ParagraphTokenType.LineBreak, "<br>"));
+                                    i += 2;
+                                    continue;
+                                case 't':
+                                    tokens.Add(new ParagraphToken(ParagraphTokenType.Tab, "\t"));
+                                    i += 2;
+                                    continue;
+                                case '\\':
+                                    tokens.Add(new ParagraphToken(ParagraphTokenType.Text, "\\"));
+                                    i += 2;
+                                    continue;
+                                default:
+                                    tokens.Add(new ParagraphToken(ParagraphTokenType.Text, nextChar.ToString()));
+                                    i += 2;
+                                    continue;
+                            }
+                        }
+                        else
+                        {
+                            // Single backslash at the end of text
+                            tokens.Add(new ParagraphToken(ParagraphTokenType.Text, "\\"));
+                            i++;
+                            continue;
+                        }
+                    }
+                    else if (c == '*')
+                    {
+                        int count = 1;
+                        while (i + count < text.Length && text[i + count] == '*')
+                            count++;
+
+                        int asterisks = count >= 2 ? 2 : 1;
+                        tokens.Add(new ParagraphToken(
+                            asterisks == 2 ? ParagraphTokenType.DoubleAsterisk : ParagraphTokenType.Asterisk,
+                            new string('*', asterisks)
+                        ));
+                        i += asterisks;
                         continue;
                     }
-                    isCurrentlyEscaped = true;
-
-                    previousIsLinebreak = false;
-                    AddWhitespaces();
-                    continue;
-                }
-
-                if (isCurrentlyEscaped)
-                {
-                    isCurrentlyEscaped = false;
-
-                    bool escapeDone = false;
-                    switch (c)
+                    else if (c == '\r')
                     {
-                        case 'n':
-                            output.Append("<br>");
-                            escapeDone = true;  
-                            break;
-                        case 't':
-                            output.Append('\t');
-                            escapeDone = true;
-                            break;
-                        // TODO: Add support for unicode escape characters with \[{hex code}]
-                    }
-                    if (escapeDone)
-                        continue;
-
-                    if (c == '\n') // backslash at the end of line
-                    {
-                        output.Append("<br>");
-
-                        currentWhitespaces.Clear();
+                        // Ignore carriage returns
+                        i++;
                         continue;
                     }
-
-                    if (!char.IsSymbol(c) && !"*".Contains(c))
+                    else if (c == '\n')
                     {
-                        ThrowException(i, $"Unknown escape sequence: \\{c}");
+                        // Check for empty lines (double newlines)
+                        if (i + 1 < text.Length && text[i + 1] == '\n')
+                        {
+                            tokens.Add(new ParagraphToken(ParagraphTokenType.EmptyLine, "\n\n"));
+                            i += 2;
+                        }
+                        else
+                        {
+                            tokens.Add(new ParagraphToken(ParagraphTokenType.NewLine, "\n"));
+                            i++;
+                        }
+                        continue;
                     }
-
-                    output.Append(c);
-                    continue;
+                    else if (char.IsWhiteSpace(c))
+                    {
+                        int start = i;
+                        while (i < text.Length && char.IsWhiteSpace(text[i]) && text[i] != '\n' && text[i] != '\r')
+                            i++;
+                        tokens.Add(new ParagraphToken(ParagraphTokenType.Whitespace, text.Substring(start, i - start)));
+                        continue;
+                    }
+                    else
+                    {
+                        // Regular text
+                        int start = i;
+                        while (i < text.Length && !"*\\\n\r".Contains(text[i]))
+                            i++;
+                        tokens.Add(new ParagraphToken(ParagraphTokenType.Text, text.Substring(start, i - start)));
+                        continue;
+                    }
                 }
 
-                if (c == '\n')
-                {
-                    currentWhitespaces.Clear();
-
-                    if (previousIsLinebreak) // double linebreak
-                    {
-                        output.Append("<br>");
-                    }
-                    else // singular linebreak only adds a space
-                    {
-                        output.Append(" ");
-                    }
-                    previousIsLinebreak = true;
-
-                    continue;
-                }
-                if (char.IsWhiteSpace(c))
-                {
-                    currentWhitespaces.Append(c);
-                    continue;
-                }
-
-                previousIsLinebreak = false;
-                AddWhitespaces();
-
-                output.Append(c);
+                return tokens;
             }
 
-            return output.ToString();
-
-            void AddWhitespaces()
+            // Parsing step: Build an abstract syntax tree (AST) using recursive descent
+            ParagraphNode? ParseContent(List<ParagraphToken> tokens, ref int index, ParagraphTokenType? stopAtParagraphToken = null)
             {
-                output.Append(currentWhitespaces);
-                currentWhitespaces.Clear();
+                ParagraphNode contentParagraphNode = new ParagraphNode(ParagraphNodeType.Root);
+
+                while (index < tokens.Count)
+                {
+                    ParagraphToken token = tokens[index];
+
+                    // If we find the stop token, we need to return
+                    if (stopAtParagraphToken != null && token.Type == stopAtParagraphToken)
+                    {
+                        index++; // Consume the stop token
+                        return contentParagraphNode;
+                    }
+
+                    if (token.Type == ParagraphTokenType.Asterisk || token.Type == ParagraphTokenType.DoubleAsterisk)
+                    {
+                        index++;
+                        ParagraphNodeType formatType = token.Type == ParagraphTokenType.Asterisk ? ParagraphNodeType.Emphasis : ParagraphNodeType.Strong;
+                        ParagraphNode formatParagraphNode = new ParagraphNode(formatType);
+                        ParagraphNode? innerContent = ParseContent(tokens, ref index, token.Type);
+                        if (innerContent != null)
+                        {
+                            formatParagraphNode.Children.AddRange(innerContent.Children);
+                            contentParagraphNode.Children.Add(formatParagraphNode);
+                        }
+                        else
+                        {
+                            // Unmatched formatting marker; treat the marker as text
+                            contentParagraphNode.Children.Add(new ParagraphNode(ParagraphNodeType.Text, token.Value));
+                        }
+                    }
+                    else if (token.Type == ParagraphTokenType.Text || token.Type == ParagraphTokenType.Whitespace || token.Type == ParagraphTokenType.Tab)
+                    {
+                        contentParagraphNode.Children.Add(new ParagraphNode(ParagraphNodeType.Text, token.Value));
+                        index++;
+                    }
+                    else if (token.Type == ParagraphTokenType.LineBreak || token.Type == ParagraphTokenType.EmptyLine)
+                    {
+                        contentParagraphNode.Children.Add(new ParagraphNode(ParagraphNodeType.LineBreak, "<br>"));
+                        index++;
+                    }
+                    else if (token.Type == ParagraphTokenType.NewLine)
+                    {
+                        contentParagraphNode.Children.Add(new ParagraphNode(ParagraphNodeType.Text, " "));
+                        index++;
+                    }
+                    else
+                    {
+                        // Unhandled token types
+                        index++;
+                    }
+                }
+
+                if (stopAtParagraphToken != null)
+                {
+                    // We expected a stop token but didn't find it
+                    // Return null to indicate an unmatched formatting marker
+                    return null;
+                }
+
+                return contentParagraphNode;
             }
 
-            void ThrowException(int i, string message)
+            // Rendering step: Convert the AST into HTML
+            string RenderNodes(ParagraphNode? node)
             {
-                string beforeContents = data.Contents.Substring(0, i);
+                if (node is null)
+                    return string.Empty;
 
-                int linebreakCount = beforeContents.Count(c => c == '\n');
-                int lastLinebreak = beforeContents.LastIndexOf('\n');
-                int row = data.rowIndex + linebreakCount;
-                int col = i - lastLinebreak;
-
-                throw new SyntaxException(data.File.FullStack, row, row, col, col + 1,
-                    message);
+                StringBuilder htmlBuilder = new();
+                foreach (var child in node.Children)
+                {
+                    switch (child.Type)
+                    {
+                        case ParagraphNodeType.Text:
+                            htmlBuilder.Append(child.Value);
+                            break;
+                        case ParagraphNodeType.Emphasis:
+                            htmlBuilder.Append("<em>");
+                            htmlBuilder.Append(RenderNodes(child));
+                            htmlBuilder.Append("</em>");
+                            break;
+                        case ParagraphNodeType.Strong:
+                            htmlBuilder.Append("<strong>");
+                            htmlBuilder.Append(RenderNodes(child));
+                            htmlBuilder.Append("</strong>");
+                            break;
+                        case ParagraphNodeType.LineBreak:
+                            htmlBuilder.Append("<br>");
+                            break;
+                        default:
+                            htmlBuilder.Append(RenderNodes(child));
+                            break;
+                    }
+                }
+                return htmlBuilder.ToString();
             }
         }
     }

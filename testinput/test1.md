@@ -8,13 +8,22 @@ empty line after text
 
 here is a backslash at the end \
 and the next line
+
+\
+
+
 Also, two emptynes after text\*Yeahhh lol
 
 Backslash symbol: \\
 And a new line\nWithin a line.
 
+Tab: "\t", amogus: "\x[D9E]"
+
 ## Subsection 1
 text 2
+
+this is *italic text*, this is **bold text** and this is *italic with **bold text*** 
+but this should not be \*italic text\* yeah
 
 @ Tab 2
 # Section 2

@@ -56,7 +56,7 @@ namespace ImprovedMarkdown.Transpiler
                         sidebar.Append($"<a id=\"SECTION-BTN_{sectionId}\" href=\"#SECTION_{sectionId}\" onclick=\"onSectionClick('{sectionId}')\">{part.Contents}</a>");
 
                         inSection = true;
-
+                         
                         body.Append(sectionStart);
                     }
                     body.Append($"<h{partTypeHeader.Depth}>{part.Contents}</h{partTypeHeader.Depth}>");
