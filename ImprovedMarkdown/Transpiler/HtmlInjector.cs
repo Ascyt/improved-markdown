@@ -1,4 +1,5 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
+using NUglify;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,14 @@ namespace ImprovedMarkdown.Transpiler
 {
     internal static class HtmlInjector
     {
+        private static string GetMinifiedHtml(string html)
+        {
+            return Uglify.Html(html).Code;
+        }
+
         public static string InjectInto(this HtmlComponents components, string html)
         {
-            return html
+            return GetMinifiedHtml(html)
                 .Replace("{{SIDEBAR}}", components.Sidebar)
                 .Replace("{{NAVBAR}}", components.Navbar)
                 .Replace("{{BODY}}", components.Body)
