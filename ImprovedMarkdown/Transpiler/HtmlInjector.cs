@@ -14,7 +14,8 @@ namespace ImprovedMarkdown.Transpiler
             return html
                 .Replace("{{SIDEBAR}}", components.Sidebar)
                 .Replace("{{NAVBAR}}", components.Navbar)
-                .Replace("{{BODY}}", components.Body);
+                .Replace("{{BODY}}", components.Body)
+                .Replace("{{TITLE}}", components.Title);
         }
     }
 }

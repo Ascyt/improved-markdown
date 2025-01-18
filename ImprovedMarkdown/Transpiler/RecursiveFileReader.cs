@@ -13,7 +13,7 @@ namespace ImprovedMarkdown.Transpiler
 {
     internal static class RecursiveFileReader
     {
-        public static async Task<List<SplitData>> ReadFileRecursivelyAsync(string filePath, string directoryTree, Stack<ParsedFile>? upperFiles = null, SplitData? importedFrom = null)
+        public static async Task<List<SplitData>> ReadFileRecursivelyAsync(string filePath, string directoryTree, string? title=null, Stack<ParsedFile>? upperFiles = null, SplitData? importedFrom = null)
         {
             string fileContents = (await File.ReadAllTextAsync(filePath)).Replace("\r", "");
             string[] lines = fileContents.Split('\n');
@@ -24,7 +24,10 @@ namespace ImprovedMarkdown.Transpiler
             // Output is split by imported files
             List<SplitData> output = new();
             upperFiles ??= new Stack<ParsedFile>();
-            ParsedFile parsedFile = new(filePath, directoryTree, fileContents, upperFiles, importedFrom);
+
+            title ??= Path.GetFileNameWithoutExtension(filePath);
+
+            ParsedFile parsedFile = new(filePath, directoryTree, title, fileContents, upperFiles, importedFrom);
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -45,7 +48,7 @@ namespace ImprovedMarkdown.Transpiler
                         newFilePath = Path.Join(workingDirectory.FullName, newFilePath);
                     }
                     
-                    output.AddRange(await ReadFileRecursivelyAsync(newFilePath, directoryTree, newFileUpperFiles, newFileImportedFrom));
+                    output.AddRange(await ReadFileRecursivelyAsync(newFilePath, directoryTree, title, newFileUpperFiles, newFileImportedFrom));
 
                     currentLines.Clear();
                     startCurrentLinesIndex = i;

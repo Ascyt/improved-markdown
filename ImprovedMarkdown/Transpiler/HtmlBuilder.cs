@@ -105,7 +105,7 @@ namespace ImprovedMarkdown.Transpiler
                 sidebar.Append("</div>");
             }
 
-            return new HtmlComponents(sidebar.ToString(), navbar.ToString(), "", body.ToString());
+            return new HtmlComponents(sidebar.ToString(), navbar.ToString(), "", body.ToString(), data.FirstOrDefault()?.File?.Title ?? "Unnamed Document");
         }
     }
 }
