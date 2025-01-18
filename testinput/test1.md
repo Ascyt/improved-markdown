@@ -20,6 +20,10 @@ Tab: "\t", amogus: "\x[D9E]"
 
 This is an `inline code` thing
 
+\[
+f'(x) = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
+\]
+
 And here is a code block:
 ```csharp
     public static void HelloWorld()
