@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.40.0" />
     <PackageReference Include="NUglify" Version="1.21.11" />
     <PackageReference Include="PowerArgs" Version="4.0.3" />
   </ItemGroup>

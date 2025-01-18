@@ -28,7 +28,7 @@ namespace ImprovedMarkdown.Transpiler
             {
                 if (part is SyntaxTypeParagraph partTypeParagraph)
                 {
-                    StringBuilder paragraph = new($"<p>{part.Contents.Trim()}</p>");
+                    StringBuilder paragraph = new(part.Contents.Trim());
                     body.Append(paragraph);
                 }
                 if (part is SyntaxTypeHeader partTypeHeader)

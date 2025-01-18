@@ -9,7 +9,6 @@ empty line after text
 here is a backslash at the end \
 and the next line
 
-\
 
 
 Also, two emptynes after text\*Yeahhh lol
@@ -33,7 +32,7 @@ Here is a link: [A youtube link](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
 Image screm.jpg: 
 
-![this is screm](./ screm.jpg)
+![this is screm](./screm.jpg)
 
 Here is a list:
 - Unordered
