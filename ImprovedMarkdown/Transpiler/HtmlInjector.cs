@@ -17,5 +17,12 @@ namespace ImprovedMarkdown.Transpiler
                 .Replace("{{BODY}}", components.Body)
                 .Replace("{{TITLE}}", components.Title);
         }
-    }
+        public static string InjectInto(this HtmlIndexComponents components, string html)
+        {
+            return html
+                .Replace("{{TITLE}}", components.Title)
+                .Replace("{{FILES}}", components.Files)
+                .Replace("{{DIRECTORIES}}", components.Dictionaries);
+        }
+    } 
 }

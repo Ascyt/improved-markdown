@@ -51,6 +51,7 @@ try
         .BuildDirectoryTree();
 
     await rootDir.WriteDirectoryTree(pArgs.OutputDir);
+    await rootDir.WriteIndexFiles(pArgs.OutputDir, indexBoilerplate);
 }
 catch (SyntaxException e)
 {
