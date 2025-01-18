@@ -1,18 +1,13 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
 using ImprovedMarkdown.Transpiler.Entities.SyntaxTypes;
 using ImprovedMarkdown.Transpiler.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace ImprovedMarkdown.Transpiler
 {
     internal static class HtmlBuilder
     {
-        public static HtmlComponents BuildHtmlComponents(this List<SplitData> data)
+        public static HtmlComponents BuildHtmlComponents(this List<SplitData> data, string outputRootDirLocation)
         {
             StringBuilder body = new();
             StringBuilder sidebar = new();
@@ -35,7 +30,7 @@ namespace ImprovedMarkdown.Transpiler
                 {
                     StringBuilder paragraph = new($"<p>{part.Contents.Trim()}</p>");
                     body.Append(paragraph);
-                }   
+                }
                 if (part is SyntaxTypeHeader partTypeHeader)
                 {
                     if (partTypeHeader.Depth == 1)
@@ -97,7 +92,7 @@ namespace ImprovedMarkdown.Transpiler
             if (inSection)
             {
                 body.Append("</div>");
-            } 
+            }
 
             if (inTab)
             {
@@ -105,7 +100,25 @@ namespace ImprovedMarkdown.Transpiler
                 sidebar.Append("</div>");
             }
 
-            return new HtmlComponents(sidebar.ToString(), navbar.ToString(), "", body.ToString(), data.FirstOrDefault()?.File?.Title ?? "Unnamed Document");
+            // Build the parent directories HTML
+            var firstFile = data.FirstOrDefault()?.File;
+            var parentDirs = new List<(string, string)>() { ("", "root") };
+
+            if (firstFile != null)
+            {
+                foreach (string dir in firstFile.DirectoryTree.Split('/').Skip(1))
+                {
+                    parentDirs.Add((dir, dir));
+                }
+            }
+
+            return new HtmlComponents(
+                sidebar: sidebar.ToString(),
+                navbar: navbar.ToString(),
+                initialTabId: inTabId ?? "",
+                body: body.ToString(),
+                title: firstFile?.Title ?? "Unnamed Document",
+                parents: parentDirs.ToArray().BuildHtmlParentDirs(outputRootDirLocation));
         }
     }
 }

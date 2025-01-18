@@ -18,21 +18,27 @@ namespace ImprovedMarkdown.Transpiler
             }
 
             // Start the recursive index file writing process
-            await WriteIndexFileAsync(root, outputDir, indexBoilerplateHtml);
+            await WriteIndexFileAsync(root, outputDir, outputDir, indexBoilerplateHtml, new List<(string, string)>() { ("", "root") });
         }
 
-        private static async Task WriteIndexFileAsync(DirectoryNode node, string currentPath, string indexBoilerplateHtml)
+
+        private static async Task WriteIndexFileAsync(DirectoryNode node, string outputDir, string currentPath, string indexBoilerplateHtml, List<(string, string)> parentDirs)
         {
+            // Initialize parentDirs if it's null
+            parentDirs ??= new List<(string, string)>();
+
             // Create the HTML list for files
             string filesList = "<ul>" + string.Join("", node.Files.Keys.Select(f => $"<li><a href=\"{f}.html\">{f}</a></li>")) + "</ul>";
 
             // Create the HTML list for directories
             string directoriesList = "<ul>" + string.Join("", node.Directories.Keys.Select(d => $"<li><a href=\"{d}/index.html\">{d}</a></li>")) + "</ul>";
 
+            // Build the parent directories HTML
             var indexComponents = new HtmlIndexComponents(
                 title: $"Index of {node.Name}",
                 files: filesList,
-                dictionaries: directoriesList
+                dictionaries: directoriesList,
+                parents: parentDirs.ToArray().BuildHtmlParentDirs(outputDir)
             );
 
             string indexHtmlContent = indexComponents.InjectInto(indexBoilerplateHtml);
@@ -49,7 +55,14 @@ namespace ImprovedMarkdown.Transpiler
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
-                await WriteIndexFileAsync(directory.Value, directoryPath, indexBoilerplateHtml);
+
+                // Add the current directory to the parentDirs list
+                var newParentDirs = new List<(string, string)>(parentDirs)
+                    {
+                        (directory.Key, directory.Key) // Assuming the title is the same as the directory name
+                    };
+
+                await WriteIndexFileAsync(directory.Value, outputDir, directoryPath, indexBoilerplateHtml, newParentDirs);
             }
         }
     }

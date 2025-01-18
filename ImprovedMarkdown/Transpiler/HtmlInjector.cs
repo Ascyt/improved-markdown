@@ -15,14 +15,16 @@ namespace ImprovedMarkdown.Transpiler
                 .Replace("{{SIDEBAR}}", components.Sidebar)
                 .Replace("{{NAVBAR}}", components.Navbar)
                 .Replace("{{BODY}}", components.Body)
-                .Replace("{{TITLE}}", components.Title);
+                .Replace("{{TITLE}}", components.Title)
+                .Replace("{{PARENTS}}", components.Parents);
         }
         public static string InjectInto(this HtmlIndexComponents components, string html)
         {
             return html
                 .Replace("{{TITLE}}", components.Title)
                 .Replace("{{FILES}}", components.Files)
-                .Replace("{{DIRECTORIES}}", components.Dictionaries);
+                .Replace("{{DIRECTORIES}}", components.Dictionaries)
+                .Replace("{{PARENTS}}", components.Parents);
         }
     } 
 }

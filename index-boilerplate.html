@@ -56,13 +56,13 @@
         }
 
         #files {
-            margin-bottom: 20px;
-
             padding-left: 10px;
         }
 
         #directories {
             padding-left: 10px;
+
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -76,16 +76,16 @@
     <div id="content">
         <!-- Main Content -->
         <div id="main">
-            <!--<div id="parents">
+            <div id="parents">
                 {{PARENTS}}
-            </div>-->
-            <div id="files">
-                <h2>Files</h2>
-                {{FILES}}
             </div>
             <div id="directories">
                 <h2>Directories</h2>
                 {{DIRECTORIES}}
+            </div>
+            <div id="files">
+                <h2>Files</h2>
+                {{FILES}}
             </div>
         </div>
     </div>

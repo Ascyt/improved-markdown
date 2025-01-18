@@ -40,7 +40,7 @@ try
             Value = (await RecursiveFileReader.ReadFileRecursivelyAsync(Path.Join(pArgs.InputDir, s.TrimStart('/')) + ".md", s))
                 .SplitFilesByParts()
                 .FormatParagraphs()
-                .BuildHtmlComponents()
+                .BuildHtmlComponents(pArgs.OutputDir)
                 .InjectInto(boilerplate)
         });
 
