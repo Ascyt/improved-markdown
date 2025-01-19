@@ -44,6 +44,7 @@ namespace ImprovedMarkdown.Transpiler
                     htmlBuilder.Append($"<b>{title}</b>");
                 }
             }
+            string test = htmlBuilder.ToString();
 
             return htmlBuilder.ToString();
         }
