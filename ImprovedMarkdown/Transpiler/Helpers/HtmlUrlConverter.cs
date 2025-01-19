@@ -54,56 +54,73 @@ namespace ImprovedMarkdown.Transpiler.Helpers
                         continue;
                     }
 
-                    // Determine if the attribute value is an absolute local path
+                    // Determine if the attribute value is an absolute local path or starts with file://
                     bool isAbsoluteLocalPath = IsAbsoluteLocalPath(attrValue);
+                    bool startsWithFileProtocol = attrValue.StartsWith("file://", StringComparison.OrdinalIgnoreCase);
 
-                    // If it's a relative path, we leave it unchanged
-                    if (!isAbsoluteLocalPath)
+                    if (startsWithFileProtocol)
                     {
+                        // Remove the file:// prefix
+                        string filePath = attrValue.Substring(7); // Remove 'file://'
+
+                        // On Windows, remove the leading slash if present (file:///C:/path)
+                        if (Environment.OSVersion.Platform == PlatformID.Win32NT && filePath.StartsWith("/"))
+                        {
+                            filePath = filePath.Substring(1);
+                        }
+
+                        // Replace URL-encoded characters
+                        filePath = Uri.UnescapeDataString(filePath);
+
+                        string fileName = Path.GetFileName(filePath);
+
+                        // Update the attribute value to just the filename
+                        attr.Value = fileName;
                         continue;
                     }
 
-                    string absoluteLinkPath;
-                    try
+                    // If it's an absolute local path, process it
+                    if (isAbsoluteLocalPath)
                     {
-                        // If attribute value is a URI (e.g., file://), convert it to a local path
-                        if (Uri.TryCreate(attrValue, UriKind.Absolute, out Uri uri) && uri.IsFile)
+                        string absoluteLinkPath;
+                        try
                         {
-                            absoluteLinkPath = uri.LocalPath;
-                        }
-                        else
-                        {
-                            // Otherwise, assume it's an absolute path
+                            // Assume it's an absolute path
                             absoluteLinkPath = attrValue;
+
+                            // Ensure the path is absolute and normalized
+                            absoluteLinkPath = Path.GetFullPath(absoluteLinkPath);
+                        }
+                        catch
+                        {
+                            // Invalid path, skip
+                            continue;
                         }
 
-                        // Ensure the path is absolute and normalized
-                        absoluteLinkPath = Path.GetFullPath(absoluteLinkPath);
+                        // Check if the absoluteLinkPath is within rootDir
+                        if (!IsSubPathOf(rootDir, absoluteLinkPath))
+                        {
+                            // The file is not within the root directory, skip
+                            continue;
+                        }
+
+                        // Get the relative path from rootDir to absoluteLinkPath
+                        string relativePathToRoot = Path.GetRelativePath(rootDir, absoluteLinkPath);
+
+                        // Exclude the first-level directory under rootDir
+                        string adjustedRelativePath = ExcludeFirstDirectory(relativePathToRoot);
+
+                        // Convert to HTTP path (replace backslashes with forward slashes)
+                        string httpPath = "/" + adjustedRelativePath.Replace('\\', '/');
+
+                        // Update the attribute value
+                        attr.Value = httpPath;
                     }
-                    catch
+                    else
                     {
-                        // Invalid path, skip
+                        // For relative paths, leave them unchanged
                         continue;
                     }
-
-                    // Check if the absoluteLinkPath is within rootDir
-                    if (!IsSubPathOf(rootDir, absoluteLinkPath))
-                    {
-                        // The file is not within the root directory, skip
-                        continue;
-                    }
-
-                    // Get the relative path from rootDir to absoluteLinkPath
-                    string relativePathToRoot = Path.GetRelativePath(rootDir, absoluteLinkPath);
-
-                    // Exclude the first-level directory under rootDir
-                    string adjustedRelativePath = ExcludeFirstDirectory(relativePathToRoot);
-
-                    // Convert to HTTP path (replace backslashes with forward slashes)
-                    string httpPath = "/" + adjustedRelativePath.Replace('\\', '/');
-
-                    // Update the attribute value
-                    attr.Value = httpPath;
                 }
             }
 
@@ -154,7 +171,7 @@ namespace ImprovedMarkdown.Transpiler.Helpers
                 return true;
 
             // Check if it's a file URI
-            if (Uri.TryCreate(path, UriKind.Absolute, out Uri uri) && uri.IsFile)
+            if (path.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
                 return true;
 
             return false;
