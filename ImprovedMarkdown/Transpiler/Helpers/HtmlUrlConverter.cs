@@ -9,6 +9,7 @@ namespace ImprovedMarkdown.Transpiler.Helpers
 {
     internal static class HtmlUrlConverter
     {
+
         public static string ConvertLocalLinksToHttp(string htmlContent, string htmlLocation, string rootDir)
         {
             // Ensure the root directory path is absolute and normalized
@@ -17,9 +18,6 @@ namespace ImprovedMarkdown.Transpiler.Helpers
             // Use HtmlAgilityPack to parse the HTML content
             var doc = new HtmlDocument();
             doc.LoadHtml(htmlContent);
-
-            // Get the base directory from the HTML file location
-            var htmlDir = Path.GetDirectoryName(htmlLocation);
 
             // List of attributes to consider
             var attributesToCheck = new[] { "src", "href" };
@@ -55,7 +53,6 @@ namespace ImprovedMarkdown.Transpiler.Helpers
                     }
 
                     // Determine if the attribute value is an absolute local path or starts with file://
-                    bool isAbsoluteLocalPath = IsAbsoluteLocalPath(attrValue);
                     bool startsWithFileProtocol = attrValue.StartsWith("file://", StringComparison.OrdinalIgnoreCase);
 
                     if (startsWithFileProtocol)
@@ -72,6 +69,7 @@ namespace ImprovedMarkdown.Transpiler.Helpers
                         // Replace URL-encoded characters
                         filePath = Uri.UnescapeDataString(filePath);
 
+                        // Get the filename
                         string fileName = Path.GetFileName(filePath);
 
                         // Update the attribute value to just the filename
@@ -80,16 +78,13 @@ namespace ImprovedMarkdown.Transpiler.Helpers
                     }
 
                     // If it's an absolute local path, process it
-                    if (isAbsoluteLocalPath)
+                    if (IsAbsoluteLocalPath(attrValue))
                     {
                         string absoluteLinkPath;
                         try
                         {
                             // Assume it's an absolute path
-                            absoluteLinkPath = attrValue;
-
-                            // Ensure the path is absolute and normalized
-                            absoluteLinkPath = Path.GetFullPath(absoluteLinkPath);
+                            absoluteLinkPath = Path.GetFullPath(attrValue);
                         }
                         catch
                         {
