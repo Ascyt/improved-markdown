@@ -29,7 +29,7 @@ namespace ImprovedMarkdown.Transpiler
                     htmlBuilder.Append(" / ");
                 }
 
-                if (title != dir && !string.IsNullOrWhiteSpace(dir))
+                if (i < parents.Length - 1)
                 {
                     currentPath = string.IsNullOrEmpty(currentPath) ? dir : $"{currentPath}/{dir}";
 
