@@ -37,7 +37,7 @@ namespace ImprovedMarkdown.Transpiler
 
                     string upperPath = Path.Join(directory, "index.html");
 
-                    htmlBuilder.Append($"<a href=\"file:///{upperPath}\">{title}</a>");
+                    htmlBuilder.Append($"<a href=\"file://{upperPath}\">{title}</a>");
                 }
                 else
                 {
