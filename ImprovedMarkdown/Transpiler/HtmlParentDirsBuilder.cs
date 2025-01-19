@@ -33,7 +33,9 @@ namespace ImprovedMarkdown.Transpiler
                 {
                     currentPath = string.IsNullOrEmpty(currentPath) ? dir : $"{currentPath}/{dir}";
 
-                    string upperPath = Path.Join(outputRootDirLocation, currentPath, "index.html");
+                    string directory = new FileInfo(Path.Join(outputRootDirLocation, currentPath)).FullName;
+
+                    string upperPath = Path.Join(directory, "index.html");
 
                     htmlBuilder.Append($"<a href=\"file:///{upperPath}\">{title}</a>");
                 }
