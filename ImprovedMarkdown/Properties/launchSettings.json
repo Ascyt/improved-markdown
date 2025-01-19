@@ -2,7 +2,7 @@
   "profiles": {
     "ImprovedMarkdown": {
       "commandName": "Project",
-      "commandLineArgs": "-i \"C:\\Users\\filip\\Documents\\improved-markdown\\testinput\"\r\n-o \"C:\\Users\\filip\\Documents\\improved-markdown\\testoutput\""
+      "commandLineArgs": "-i \"C:\\Users\\filip\\Documents\\improved-markdown\\testinput\"\r\n-o \"C:\\Users\\filip\\Documents\\improved-markdown\\testoutput\"\r\n--server"
     }
   }
 }

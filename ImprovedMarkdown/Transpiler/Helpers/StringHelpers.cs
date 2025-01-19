@@ -1,9 +1,6 @@
-﻿using NUglify.Html;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using HtmlAgilityPack;
+using NUglify.Html;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ImprovedMarkdown.Transpiler.Helpers
 {

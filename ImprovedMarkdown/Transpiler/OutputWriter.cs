@@ -1,4 +1,5 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
+using ImprovedMarkdown.Transpiler.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ImprovedMarkdown.Transpiler
 {
     internal static class OutputWriter
     {
-        public static async Task WriteDirectoryTree(this DirectoryNode root, string outputDir)
+        public static async Task WriteDirectoryTreeAsync(this DirectoryNode root, string outputDir, bool useHttpPaths)
         {
             // Ensure the output directory exists, and clear it if it does
             if (Directory.Exists(outputDir))
@@ -19,10 +20,10 @@ namespace ImprovedMarkdown.Transpiler
             Directory.CreateDirectory(outputDir);
 
             // Start the recursive writing process
-            await WriteNodeAsync(root, outputDir);
+            await WriteNodeAsync(root, outputDir, outputDir, useHttpPaths);
         }
 
-        private static async Task WriteNodeAsync(DirectoryNode node, string currentPath)
+        private static async Task WriteNodeAsync(DirectoryNode node, string currentPath, string outputRootDir, bool useHttpPaths)
         {
             List<Task> tasks = new();
 
@@ -30,7 +31,9 @@ namespace ImprovedMarkdown.Transpiler
             foreach (var file in node.Files)
             {
                 string filePath = Path.Combine(currentPath, file.Key) + ".html";
-                tasks.Add(File.WriteAllTextAsync(filePath, file.Value));
+                string contents = useHttpPaths ? HtmlUrlConverter.ConvertLocalLinksToHttp(file.Value, filePath, outputRootDir) : file.Value;
+
+                tasks.Add(File.WriteAllTextAsync(filePath, contents));
             }
 
             // Recursively write all subdirectories
@@ -38,7 +41,7 @@ namespace ImprovedMarkdown.Transpiler
             {
                 string directoryPath = Path.Combine(currentPath, directory.Key);
                 Directory.CreateDirectory(directoryPath);
-                tasks.Add(WriteNodeAsync(directory.Value, directoryPath));
+                tasks.Add(WriteNodeAsync(directory.Value, directoryPath, outputRootDir, useHttpPaths));
             }
 
             await Task.WhenAll(tasks);

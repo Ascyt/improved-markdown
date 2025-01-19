@@ -1,4 +1,5 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
+using ImprovedMarkdown.Transpiler.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ImprovedMarkdown.Transpiler
 {
     internal static class IndexWriter
     {
-        public static async Task WriteIndexFiles(this DirectoryNode root, string outputDir, string indexBoilerplateHtml)
+        public static async Task WriteIndexFilesAsync(this DirectoryNode root, string outputDir, string indexBoilerplateHtml, bool useHttpPaths)
         {
             // Ensure the output directory exists
             if (!Directory.Exists(outputDir))
@@ -18,11 +19,11 @@ namespace ImprovedMarkdown.Transpiler
             }
 
             // Start the recursive index file writing process
-            await WriteIndexFileAsync(root, outputDir, outputDir, indexBoilerplateHtml, new List<(string, string)>() { ("", "root") });
+            await WriteIndexFileAsync(root, outputDir, outputDir, indexBoilerplateHtml, useHttpPaths, new List<(string, string)>() { ("", "root") });
         }
 
 
-        private static async Task WriteIndexFileAsync(DirectoryNode node, string outputDir, string currentPath, string indexBoilerplateHtml, List<(string, string)> parentDirs)
+        private static async Task WriteIndexFileAsync(DirectoryNode node, string outputDir, string currentPath, string indexBoilerplateHtml, bool useHttpPaths, List<(string, string)> parentDirs)
         {
             // Initialize parentDirs if it's null
             parentDirs ??= new List<(string, string)>();
@@ -42,6 +43,8 @@ namespace ImprovedMarkdown.Transpiler
             );
 
             string indexHtmlContent = indexComponents.InjectInto(indexBoilerplateHtml);
+            if (useHttpPaths)
+                indexHtmlContent = HtmlUrlConverter.ConvertLocalLinksToHttp(indexHtmlContent, currentPath, outputDir);
 
             // Write the index.html file
             string indexPath = Path.Combine(currentPath, "index.html");
@@ -62,7 +65,7 @@ namespace ImprovedMarkdown.Transpiler
                         (directory.Key, directory.Key) // Assuming the title is the same as the directory name
                     };
 
-                await WriteIndexFileAsync(directory.Value, outputDir, directoryPath, indexBoilerplateHtml, newParentDirs);
+                await WriteIndexFileAsync(directory.Value, outputDir, directoryPath, indexBoilerplateHtml, useHttpPaths, newParentDirs);
             }
         }
     }

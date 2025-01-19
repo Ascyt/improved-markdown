@@ -1,4 +1,5 @@
 ﻿using ImprovedMarkdown.Transpiler.Entities;
+using ImprovedMarkdown.Transpiler.Helpers;
 using NUglify;
 using System;
 using System.Collections.Generic;
@@ -17,20 +18,20 @@ namespace ImprovedMarkdown.Transpiler
 
         public static string InjectInto(this HtmlComponents components, string html)
         {
-            return GetMinifiedHtml(html)
+            return GetMinifiedHtml(html
                 .Replace("{{SIDEBAR}}", components.Sidebar)
                 .Replace("{{NAVBAR}}", components.Navbar)
                 .Replace("{{BODY}}", components.Body)
                 .Replace("{{TITLE}}", components.Title)
-                .Replace("{{PARENTS}}", components.Parents);
+                .Replace("{{PARENTS}}", components.Parents));
         }
         public static string InjectInto(this HtmlIndexComponents components, string html)
         {
-            return html
+            return GetMinifiedHtml(html
                 .Replace("{{TITLE}}", components.Title)
                 .Replace("{{FILES}}", components.Files)
                 .Replace("{{DIRECTORIES}}", components.Dictionaries)
-                .Replace("{{PARENTS}}", components.Parents);
+                .Replace("{{PARENTS}}", components.Parents));
         }
     } 
 }

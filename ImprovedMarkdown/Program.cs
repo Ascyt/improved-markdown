@@ -50,8 +50,8 @@ try
         .ToDictionary(x => x.Key, x => x.Value)
         .BuildDirectoryTree();
 
-    await rootDir.WriteDirectoryTree(pArgs.OutputDir);
-    await rootDir.WriteIndexFiles(pArgs.OutputDir, indexBoilerplate);
+    await rootDir.WriteDirectoryTreeAsync(pArgs.OutputDir, pArgs.ServerBuild);
+    await rootDir.WriteIndexFilesAsync(pArgs.OutputDir, indexBoilerplate, pArgs.ServerBuild);
 
     await pArgs.InputDir.CopyResourcesRecursivelyTo(pArgs.OutputDir);
 }
