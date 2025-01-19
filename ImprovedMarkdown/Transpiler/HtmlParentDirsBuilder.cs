@@ -17,8 +17,6 @@ namespace ImprovedMarkdown.Transpiler
                 return string.Empty;
             }
 
-            outputRootDirLocation = Path.GetFullPath(outputRootDirLocation);
-
             StringBuilder htmlBuilder = new StringBuilder();
             string currentPath = string.Empty;
 

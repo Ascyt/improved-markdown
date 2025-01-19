@@ -33,16 +33,19 @@ return 1;
 }
 indexBoilerplate = await File.ReadAllTextAsync(indexBoilerplateDir);
 
+string inputDir = Path.GetFullPath(pArgs.InputDir);
+string outputDir = Path.GetFullPath(pArgs.OutputDir);
+
 try
 {
-    var tasks = DirectoryTreeReader.ReadDirectoryTree(pArgs.InputDir)
+    var tasks = DirectoryTreeReader.ReadDirectoryTree(inputDir)
         .Select(async s => new
         {
             Key = s,
-            Value = (await RecursiveFileReader.ReadFileRecursivelyAsync(Path.Join(pArgs.InputDir, s.TrimStart('/')) + ".md", s))
+            Value = (await RecursiveFileReader.ReadFileRecursivelyAsync(Path.Join(inputDir, s.TrimStart('/')) + ".md", s))
                 .SplitFilesByParts()
                 .FormatParagraphs()
-                .BuildHtmlComponents(pArgs.OutputDir)
+                .BuildHtmlComponents(outputDir)
                 .InjectInto(boilerplate)
         });
 
@@ -52,10 +55,10 @@ try
         .ToDictionary(x => x.Key, x => x.Value)
         .BuildDirectoryTree();
 
-    await rootDir.WriteDirectoryTreeAsync(pArgs.OutputDir, pArgs.ServerBuild);
-    await rootDir.WriteIndexFilesAsync(pArgs.OutputDir, indexBoilerplate, pArgs.ServerBuild);
+    await rootDir.WriteDirectoryTreeAsync(outputDir, pArgs.ServerBuild);
+    await rootDir.WriteIndexFilesAsync(outputDir, indexBoilerplate, pArgs.ServerBuild);
 
-    await pArgs.InputDir.CopyResourcesRecursivelyTo(pArgs.OutputDir);
+    await inputDir.CopyResourcesRecursivelyTo(outputDir);
 }
 catch (SyntaxException e)
 {
@@ -64,9 +67,9 @@ catch (SyntaxException e)
 }
 
 
-//File.WriteAllText(pArgs.OutputDir, output);
+//File.WriteAllText(outputDir, output);
 
-FileInfo outputFileInfo = new FileInfo(pArgs.OutputDir);
+FileInfo outputFileInfo = new FileInfo(outputDir);
 
 if (outputFileInfo.Exists)
 {
