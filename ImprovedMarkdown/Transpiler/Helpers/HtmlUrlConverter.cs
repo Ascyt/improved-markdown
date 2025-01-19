@@ -96,8 +96,11 @@ namespace ImprovedMarkdown.Transpiler.Helpers
                     // Get the relative path from rootDir to absoluteLinkPath
                     string relativePathToRoot = Path.GetRelativePath(rootDir, absoluteLinkPath);
 
+                    // Exclude the first-level directory under rootDir
+                    string adjustedRelativePath = ExcludeFirstDirectory(relativePathToRoot);
+
                     // Convert to HTTP path (replace backslashes with forward slashes)
-                    string httpPath = "/" + relativePathToRoot.Replace('\\', '/');
+                    string httpPath = "/" + adjustedRelativePath.Replace('\\', '/');
 
                     // Update the attribute value
                     attr.Value = httpPath;
@@ -109,6 +112,30 @@ namespace ImprovedMarkdown.Transpiler.Helpers
             {
                 doc.Save(writer);
                 return writer.ToString();
+            }
+        }
+
+        // Helper method to exclude the first-level directory from a relative path
+        private static string ExcludeFirstDirectory(string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return relativePath;
+
+            // Normalize the path separators
+            relativePath = relativePath.Replace('\\', '/');
+
+            // Split the path into segments
+            var segments = relativePath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // If there's at least two segments, exclude the first one
+            if (segments.Length >= 2)
+            {
+                return string.Join('/', segments, 1, segments.Length - 1);
+            }
+            else
+            {
+                // If there's only one segment, return it as is
+                return relativePath;
             }
         }
 
