@@ -22,5 +22,13 @@ namespace ImprovedMarkdown
         [ArgShortcut("--server")]
         [ArgDescription("Server build, uses HTTP paths instead of local filesystem paths")]
         public bool ServerBuild { get; set; }
+
+        [ArgShortcut("--boilerplate")]
+        [ArgDescription("Use a custom HTML boilerplate file")]
+        public string? Boilerplate { get; set; }
+
+        [ArgShortcut("--index-boilerplate")]
+        [ArgDescription("Use a custom HTML index boilerplate file")]
+        public string? IndexBoilerplate { get; set; }
     }
 }

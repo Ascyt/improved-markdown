@@ -15,21 +15,23 @@ catch (ArgException ex)
     return 1;
 }
 
+string boilerplateDir = pArgs.Boilerplate ?? Config.BOILERPLATE_FILE;
 string boilerplate;
-if (!File.Exists(Config.BOILERPLATE_FILE))
+if (!File.Exists(boilerplateDir))
 {
-    Console.WriteLine($"Error: Boilerplate file {Config.BOILERPLATE_FILE} does not exist.");
+    Console.WriteLine($"Error: Boilerplate file {boilerplateDir} does not exist.");
     return 1;
 }
-boilerplate = await File.ReadAllTextAsync(Config.BOILERPLATE_FILE);
+boilerplate = await File.ReadAllTextAsync(boilerplateDir);
 
+string indexBoilerplateDir = pArgs.IndexBoilerplate ?? Config.INDEX_BOILERPLATE_FILE;
 string indexBoilerplate;
-if (!File.Exists(Config.INDEX_BOILERPLATE_FILE))
+if (!File.Exists(indexBoilerplateDir))
 {
-Console.WriteLine($"Error: Index boilerplate file {Config.INDEX_BOILERPLATE_FILE} does not exist.");
+Console.WriteLine($"Error: Index boilerplate file {indexBoilerplateDir} does not exist.");
 return 1;
 }
-indexBoilerplate = await File.ReadAllTextAsync(Config.INDEX_BOILERPLATE_FILE);
+indexBoilerplate = await File.ReadAllTextAsync(indexBoilerplateDir);
 
 try
 {
