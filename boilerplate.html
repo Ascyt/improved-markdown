@@ -129,6 +129,41 @@
         #parents {
             margin-bottom: 20px;
         }
+
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            min-width: 400px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        th {
+            background-color: #c0c0c0;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #d0d0d0;
+        }
+
+        tr:hover {
+            background-color: #c0c0c0;
+        }
+
+        img {
+            width: 25%;
+            height: auto;
+        }
+
+        .katex-display .katex {
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -217,8 +252,8 @@
         document.addEventListener('mousemove', function(e) {
             if (!isResizing) return;
             let newWidth = e.clientX - sidebar.getBoundingClientRect().left;
-            if (newWidth < 100) newWidth = 100; // Minimum width
-            if (newWidth > 300) newWidth = 300; // Maximum width
+            if (newWidth < 50) newWidth = 50; // Minimum width
+            if (newWidth > 1000) newWidth = 1000; // Maximum width
             sidebar.style.width = newWidth + 'px';
         });
 
