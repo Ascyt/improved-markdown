@@ -69,11 +69,11 @@ catch (SyntaxException e)
 
 //File.WriteAllText(outputDir, output);
 
-FileInfo outputFileInfo = new FileInfo(outputDir);
+DirectoryInfo directoryInfo = new DirectoryInfo(outputDir);
 
-if (outputFileInfo.Exists)
+if (directoryInfo.Exists)
 {
-    Console.WriteLine($"Saved file to `{outputFileInfo.FullName}` ({outputFileInfo.Length} bytes)");
+    Console.WriteLine($"Compiled markdown files to `{directoryInfo.FullName}`");
 }
 
 return 0;

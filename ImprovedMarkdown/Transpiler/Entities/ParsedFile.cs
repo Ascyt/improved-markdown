@@ -8,7 +8,7 @@ namespace ImprovedMarkdown.Transpiler.Entities
 {
     internal class ParsedFile(string filePath, string directoryTree, string title, string fullContents, Stack<ParsedFile> upperFiles, SplitData? importedFrom)
     {
-        public string FilePath = filePath;
+        public string FilePath = Path.GetFullPath(filePath);
         public string DirectoryTree = directoryTree;
         public string Title = title;
         public string FullContents = fullContents;
