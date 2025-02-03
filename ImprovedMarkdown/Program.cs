@@ -42,7 +42,7 @@ try
         .Select(async s => new
         {
             Key = s,
-            Value = (await RecursiveFileReader.ReadFileRecursivelyAsync(Path.Join(inputDir, s.TrimStart('/')) + ".md", s))
+            Value = (await RecursiveFileReader.ReadFileRecursivelyAsync(Path.Join(inputDir, s.TrimStart('/')) + ".md", s))?
                 .SplitFilesByParts()
                 .FormatParagraphs()
                 .BuildHtmlComponents(outputDir)
@@ -52,7 +52,8 @@ try
     var results = await Task.WhenAll(tasks);
 
     DirectoryNode rootDir = results
-        .ToDictionary(x => x.Key, x => x.Value)
+        .Where(r => r.Value is not null)
+        .ToDictionary(x => x.Key, x => x.Value!)
         .BuildDirectoryTree();
 
     await rootDir.WriteDirectoryTreeAsync(outputDir, pArgs.ServerBuild);

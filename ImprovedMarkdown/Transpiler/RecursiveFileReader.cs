@@ -13,7 +13,8 @@ namespace ImprovedMarkdown.Transpiler
 {
     internal static class RecursiveFileReader
     {
-        public static async Task<List<SplitData>> ReadFileRecursivelyAsync(string filePath, string directoryTree, string? title=null, Stack<ParsedFile>? upperFiles = null, SplitData? importedFrom = null)
+        /// <returns>List of split data, or null if marked with !noindex</returns>
+        public static async Task<List<SplitData>?> ReadFileRecursivelyAsync(string filePath, string directoryTree, string? title=null, Stack<ParsedFile>? upperFiles = null, SplitData? importedFrom = null)
         {
             string fileContents = (await File.ReadAllTextAsync(filePath)).Replace("\r", "");
             string[] lines = fileContents.Split('\n');
@@ -48,12 +49,34 @@ namespace ImprovedMarkdown.Transpiler
                         newFilePath = Path.Join(workingDirectory.FullName, newFilePath);
                     }
                     
-                    output.AddRange(await ReadFileRecursivelyAsync(newFilePath, directoryTree, title, newFileUpperFiles, newFileImportedFrom));
+                    output.AddRange((await ReadFileRecursivelyAsync(newFilePath, directoryTree, title, newFileUpperFiles, newFileImportedFrom))!);
 
                     currentLines.Clear();
                     startCurrentLinesIndex = i;
 
                     continue;
+                }
+
+                if (trimmedLine.StartsWith("!")) //options
+                {
+                    string fullArg = trimmedLine.Substring(1).Trim();
+
+                    bool doContinue = false;
+
+                    switch (fullArg)
+                    {
+                        case "noindex":
+                            if (importedFrom == null)
+                            {
+                                return null;
+                            }
+
+                            doContinue = true;
+                            break;
+                    }
+
+                    if (doContinue)
+                        continue;
                 }
                 
                 currentLines.Add(lines[i]);
